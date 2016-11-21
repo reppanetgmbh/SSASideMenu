@@ -52,9 +52,11 @@ extension UIViewController {
 
 class SSASideMenu: UIViewController, UIGestureRecognizerDelegate {
     
-    enum SSASideMenuPanDirection: Int {
-        case Edge = 0
-        case EveryWhere = 1
+    enum SSASideMenuPanDirection {
+        case Edge
+        case EveryWhere
+        case Rect(CGRect)
+        case EdgeAndRect(CGRect)
     }
     
     enum SSASideMenuType: Int {
@@ -559,16 +561,16 @@ class SSASideMenu: UIViewController, UIGestureRecognizerDelegate {
             
         }
         
-        let completionClosure: () -> () =  {[unowned self] () -> () in
+        let completionClosure: () -> () =  {[weak self] () -> () in
             
             visibleMenuViewController?.endAppearanceTransition()
             
-            if isRightMenuVisible, let viewController = self.rightMenuViewController {
-                self.delegate?.sideMenuDidHideMenuViewController?(self, menuViewController: viewController)
+            if isRightMenuVisible, let viewController = self?.rightMenuViewController {
+                self?.delegate?.sideMenuDidHideMenuViewController?(self!, menuViewController: viewController)
             }
             
-            if !isRightMenuVisible, let viewController = self.leftMenuViewController {
-                self.delegate?.sideMenuDidHideMenuViewController?(self, menuViewController: viewController)
+            if !isRightMenuVisible, let viewController = self?.leftMenuViewController {
+                self?.delegate?.sideMenuDidHideMenuViewController?(self!, menuViewController: viewController)
             }
             
         }
@@ -950,8 +952,21 @@ class SSASideMenu: UIViewController, UIGestureRecognizerDelegate {
                 return true
             case .Edge:
                 let point = touch.locationInView(gestureRecognizer.view)
-                if point.x < 20.0 || point.x > view.frame.size.width - 20.0 { return true }
-                else { return false }
+                return point.x < 20.0 || point.x > view.frame.size.width - 20.0
+            case .Rect(let rect):
+                let point = touch.locationInView(gestureRecognizer.view)
+                return point.x > rect.origin.x
+                    && point.y > rect.origin.y
+                    && point.x < rect.origin.x + rect.size.width
+                    && point.y < rect.origin.y + rect.size.height
+            case .EdgeAndRect(let rect):
+                let point = touch.locationInView(gestureRecognizer.view)
+                return point.x < 20.0 || point.x > view.frame.size.width - 20.0
+                    || point.x > rect.origin.x
+                    && point.y > rect.origin.y
+                    && point.x < rect.origin.x + rect.size.width
+                    && point.y < rect.origin.y + rect.size.height
+
             }
         }
         
@@ -1014,7 +1029,7 @@ class SSASideMenu: UIViewController, UIGestureRecognizerDelegate {
                 menuViewScale = max(menuViewScale, 1.0)
             }
             
-            menuViewContainer.alpha = fadeMenuView ? delta : 0
+            menuViewContainer.alpha = fadeMenuView ? delta : 1
             contentViewContainer.alpha = 1 - (1 - CGFloat(contentViewFadeOutAlpha)) * delta
             
             if scaleBackgroundImageView {
