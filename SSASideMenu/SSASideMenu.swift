@@ -200,7 +200,8 @@ class SSASideMenu: UIViewController, UIGestureRecognizerDelegate {
     @IBInspectable var rightMenuViewStoryboardID: String?
     
     // MARK: Private Properties: MenuView & BackgroundImageView
-    @IBInspectable var fadeMenuView: Bool =  true
+    @IBInspectable var fadeMenuView: Bool = true
+    @IBInspectable var startMenuAlpha: Float = 0.6
     @IBInspectable var scaleMenuView: Bool = true
     @IBInspectable var scaleBackgroundImageView: Bool = true
     @IBInspectable var parallaxEnabled: Bool = true
@@ -499,7 +500,7 @@ class SSASideMenu: UIViewController, UIGestureRecognizerDelegate {
         if scaleMenuView {
             menuViewContainer.transform = menuViewControllerTransformation
         }
-        menuViewContainer.alpha = fadeMenuView ? 0 : 1
+        menuViewContainer.alpha = fadeMenuView ? CGFloat(startMenuAlpha) : 1
         
         if let viewController = menuViewController {
             delegate?.sideMenuWillShowMenuViewController?(self, menuViewController: viewController)
@@ -540,7 +541,7 @@ class SSASideMenu: UIViewController, UIGestureRecognizerDelegate {
             if self.scaleMenuView {
                 self.menuViewContainer.transform = self.menuViewControllerTransformation
             }
-            self.menuViewContainer.alpha = self.fadeMenuView ? 0 : 1
+            self.menuViewContainer.alpha = self.fadeMenuView ? CGFloat(self.startMenuAlpha) : 1
             self.contentViewContainer.alpha = CGFloat(self.contentViewFadeOutAlpha)
             
             if self.scaleBackgroundImageView {
@@ -621,7 +622,7 @@ class SSASideMenu: UIViewController, UIGestureRecognizerDelegate {
         
         menuViewContainer.frame = view.bounds;
         menuViewContainer.autoresizingMask = [.FlexibleWidth, .FlexibleHeight];
-        menuViewContainer.alpha = fadeMenuView ? 0 : 1
+        menuViewContainer.alpha = fadeMenuView ? CGFloat(startMenuAlpha) : 1
         
         contentViewContainer.frame = view.bounds
         contentViewContainer.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
@@ -1021,7 +1022,8 @@ class SSASideMenu: UIViewController, UIGestureRecognizerDelegate {
                 menuViewScale = min(menuViewScale, 1.0)
             }
             
-            menuViewContainer.alpha = fadeMenuView ? delta : 1
+            let menuAlphaDelta = (delta * CGFloat(1.0 - startMenuAlpha)) + CGFloat(startMenuAlpha)
+            menuViewContainer.alpha = fadeMenuView ? menuAlphaDelta : 1
             contentViewContainer.alpha = 1 - (1 - CGFloat(contentViewFadeOutAlpha)) * delta
             
             if scaleBackgroundImageView {
