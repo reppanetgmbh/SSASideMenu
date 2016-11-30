@@ -201,7 +201,7 @@ class SSASideMenu: UIViewController, UIGestureRecognizerDelegate {
     
     // MARK: Private Properties: MenuView & BackgroundImageView
     @IBInspectable var fadeMenuView: Bool = true
-    @IBInspectable var startMenuAlpha: Float = 0.6
+    @IBInspectable var startMenuAlpha: Float = 0.2
     @IBInspectable var scaleMenuView: Bool = true
     @IBInspectable var scaleBackgroundImageView: Bool = true
     @IBInspectable var parallaxEnabled: Bool = true
