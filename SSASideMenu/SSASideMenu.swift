@@ -177,6 +177,9 @@ class SSASideMenu: UIViewController, UIGestureRecognizerDelegate {
     
     func configure(_ configuration: ContentViewEffect) {
         contentViewScaleValue = configuration.scale
+        if contentViewScaleValue <= 1 {
+            contentViewInPortraitOffsetCenterY = 0
+        }
         contentViewFadeOutAlpha = configuration.alpha
         contentViewInPortraitOffsetCenterX = configuration.portraitOffsetX
         parallaxContentMinimumRelativeValue = configuration.minParallaxContentRelativeValue
@@ -437,7 +440,7 @@ class SSASideMenu: UIViewController, UIGestureRecognizerDelegate {
         if side == .left {
             let contentWidth = CGFloat(view.frame.width) / 2
             let centerX = CGFloat(view.frame.width) + contentWidth - CGFloat(contentViewInPortraitOffsetCenterX)
-            let centerY = contentViewContainer.frame.height / 2 + CGFloat(contentViewInPortraitOffsetCenterX)
+            let centerY = contentViewContainer.frame.height / 2 + CGFloat(contentViewInPortraitOffsetCenterY)
             
             contentViewContainer.center = CGPoint(x: centerX, y: centerY)
         } else {
